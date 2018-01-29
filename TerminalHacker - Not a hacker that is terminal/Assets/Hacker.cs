@@ -28,11 +28,17 @@ public class Hacker : MonoBehaviour {
         print("I am adding the " + meatToUse);
     }
 
-    void OnUserInput(string input) {
-        if (input == "menu") {
+    void OnUserInput(string input) { // this should only decide who to handle input, not actually do it.
+        if (input == "menu") { // From every input, we can always go direct to main menu.
             ShowMainMenu();
         }
-        else if (input == "1") {
+        else if (currentScreen == Screen.MainMenu) {
+            RunMainMenu(input);
+        }
+    }
+
+    private void RunMainMenu(string input) {
+        if (input == "1") {
             level = 1;
             StartGame();
         }
