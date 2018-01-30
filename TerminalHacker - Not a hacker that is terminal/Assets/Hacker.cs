@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Hacker : MonoBehaviour {
-    int level; // game state
+    // game configuration data
     string[] level1Passwords = { "books", "aisle", "self", "password", "font", "borrow" };
     string[] level2Passwords = { "january", "suborbital", "denomination", "jackdaw", "random", "notpassword" };
+
+    // game state
+    int level;
     Screen currentScreen = Screen.MainMenu;
     string password;
 
@@ -16,6 +19,7 @@ public class Hacker : MonoBehaviour {
     };
 
     void ShowLevelReward() {
+        currentScreen = Screen.Win;
         switch (level) {
             case 1:
                 Terminal.WriteLine("Have a book...");
@@ -40,20 +44,16 @@ public class Hacker : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        CookCurry("lamb");
+        ShowMainMenu();
     }
 
     void ShowMainMenu() {
+        currentScreen = Screen.MainMenu;
         Terminal.ClearScreen();
         Terminal.WriteLine("What would you like to hack into?");
         Terminal.WriteLine("Press 1 for the local library");
         Terminal.WriteLine("Press 2 for the police station");
         Terminal.WriteLine("Enter your selection");
-    }
-
-    void CookCurry(string meatToUse) {
-        // common cooking steps go here
-        print("I am adding the " + meatToUse);
     }
 
     void OnUserInput(string input) { // this should only decide who to handle input, not actually do it.
@@ -66,13 +66,19 @@ public class Hacker : MonoBehaviour {
         else if (currentScreen == Screen.Password) {
             CheckPassword(input);
         }
+        else if (currentScreen == Screen.Win) {
+            ShowMainMenu();
+        }
     }
 
-    private void RunMainMenu(string input) {
+    void RunMainMenu(string input) {
         bool isValidLevelNumber = (input == "1" || input == "2");
+
         if (isValidLevelNumber) {
             level = int.Parse(input);
-            StartGame();
+
+            SetRandomPassword();
+            AskForPassword();
         }
         else if (input == "007") {
             Terminal.WriteLine("Please select a level, Mr. Bond");
@@ -82,10 +88,7 @@ public class Hacker : MonoBehaviour {
         }
     }
 
-    void StartGame() {
-        currentScreen = Screen.Password;
-        Terminal.ClearScreen();
-        Terminal.WriteLine("Please enter your password: ");
+    void SetRandomPassword() {
         switch (level) {
             case 1:
                 password = level1Passwords[Random.Range(0, level1Passwords.Length - 1)];
@@ -98,12 +101,20 @@ public class Hacker : MonoBehaviour {
         }
     }
 
+    private void AskForPassword() {
+        Terminal.ClearScreen();
+        currentScreen = Screen.Password;
+        Terminal.WriteLine("Please enter your password. Hint: " + password.Anagram());
+    }
+
     void CheckPassword(string input) {
         if (input == password) {
-            Terminal.WriteLine("Well done.");
+            Terminal.WriteLine("Well played.");
+            DisplayWinScreen();
         }
         else {
             Terminal.WriteLine("Wrong password");
+            SetRandomPassword();
         }
     }
 
