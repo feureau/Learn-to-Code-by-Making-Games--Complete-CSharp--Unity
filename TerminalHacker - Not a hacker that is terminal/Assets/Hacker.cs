@@ -60,6 +60,12 @@ public class Hacker : MonoBehaviour {
         if (input == "menu") { // From every input, we can always go direct to main menu.
             ShowMainMenu();
         }
+        else if (input == "quit" || input == "close" || input == "exit") {
+            if (Application.platform == RuntimePlatform.WebGLPlayer) {
+                Terminal.WriteLine("Just close the damn tab.");
+            }
+            Application.Quit();
+        }
         else if (currentScreen == Screen.MainMenu) {
             RunMainMenu(input);
         }
