@@ -4,12 +4,40 @@ using UnityEngine;
 
 public class Hacker : MonoBehaviour {
     int level; // game state
+    string[] level1Passwords = { "books", "aisle", "self", "password", "font", "borrow" };
+    string[] level2Passwords = { "january", "suborbital", "denomination", "jackdaw", "random", "notpassword" };
     Screen currentScreen = Screen.MainMenu;
+    string password;
+
     enum Screen {
         MainMenu,
         Password,
         Win
     };
+
+    void ShowLevelReward() {
+        switch (level) {
+            case 1:
+                Terminal.WriteLine("Have a book...");
+                Terminal.WriteLine(@"
+(•_•)
+
+( •_•)>⌐■-■
+
+(⌐■_■)
+
+");
+                break;
+            case 2:
+                Terminal.WriteLine("You got a prison key!");
+                Terminal.WriteLine(@"Here's your key you filthy animal");
+                break;
+            default:
+                Debug.LogError("Invalid Level reached.");
+                break;
+        }
+    }
+
     // Use this for initialization
     void Start() {
         CookCurry("lamb");
@@ -35,15 +63,15 @@ public class Hacker : MonoBehaviour {
         else if (currentScreen == Screen.MainMenu) {
             RunMainMenu(input);
         }
+        else if (currentScreen == Screen.Password) {
+            CheckPassword(input);
+        }
     }
 
     private void RunMainMenu(string input) {
-        if (input == "1") {
-            level = 1;
-            StartGame();
-        }
-        else if (input == "2") {
-            level = 2;
+        bool isValidLevelNumber = (input == "1" || input == "2");
+        if (isValidLevelNumber) {
+            level = int.Parse(input);
             StartGame();
         }
         else if (input == "007") {
@@ -56,7 +84,32 @@ public class Hacker : MonoBehaviour {
 
     void StartGame() {
         currentScreen = Screen.Password;
-        Terminal.WriteLine("You have chosen level " + level);
+        Terminal.ClearScreen();
         Terminal.WriteLine("Please enter your password: ");
+        switch (level) {
+            case 1:
+                password = level1Passwords[Random.Range(0, level1Passwords.Length - 1)];
+                break;
+            case 2:
+                password = level2Passwords[Random.Range(0, level2Passwords.Length - 2)];
+                break;
+            default:
+                break;
+        }
+    }
+
+    void CheckPassword(string input) {
+        if (input == password) {
+            Terminal.WriteLine("Well done.");
+        }
+        else {
+            Terminal.WriteLine("Wrong password");
+        }
+    }
+
+    void DisplayWinScreen() {
+        currentScreen = Screen.Win;
+        Terminal.ClearScreen();
+        ShowLevelReward();
     }
 }
